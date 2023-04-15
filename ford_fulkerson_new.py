@@ -1,12 +1,17 @@
+# Dependencies
 from collections import defaultdict
 import networkx as nx
 import matplotlib.pyplot as plt
 
+
+# Defining Node Class
 class Node:
     def __init__(self, name, resources={}):
         self.name = name
         self.resources = resources
 
+
+# Defining Edge Class
 class Edge:
     def __init__(self, u, v, num_of_trucks, truck_capacity, road_multiplier, travel_time, resource_priority):
         self.u = u
@@ -17,22 +22,31 @@ class Edge:
         self.travel_time = travel_time
         self.resource_priority = resource_priority
 
+
+# Defining Truck Class
 class Truck:
     def __init__(self, capacity):
         self.capacity = capacity
 
+
+# Defining Graph Class
 class Graph:
     def __init__(self):
         self.graph = defaultdict(dict)
 
+    # Defining add_edge method
     def add_edge(self, edge):
         u, v = edge.u, edge.v
         # Calculate edge capacity considering the factors discussed
         capacity = (edge.num_of_trucks * edge.truck_capacity *
                     edge.road_multiplier * edge.resource_priority)
+        if capacity != float("inf"):  # Check if capacity is not infinite before rounding
+            capacity = int(capacity)  # Round down the capacity to the nearest integer
+
         self.graph[u][v] = [capacity, len(self.graph[v])]
         self.graph[v][u] = [0, len(self.graph[u]) - 1]
 
+    # Defining bfs method to find the augmenting path
     def bfs(self, s, t, parent):
         visited = {v: False for v in
                    self.graph}  # initialize a dictionary of visited vertices with False for all vertices
@@ -52,6 +66,7 @@ class Graph:
 
         return visited[t]  # return True if the sink vertex is visited, False otherwise
 
+    # Defining ford_fulkerson method to find the maximum flow
     def ford_fulkerson(self, source, sink):
         parent = {}  # initialize a dictionary to keep track of the parent of each vertex in the augmenting path
         max_flow = 0  # initialize the maximum flow to 0
@@ -76,6 +91,7 @@ class Graph:
 
         return max_flow  # return the maximum flow
 
+
 # example usage
 g = Graph()
 
@@ -96,31 +112,52 @@ s5 = Node("S5")
 truck = Truck(capacity=1)
 
 # Add edges with capacities and other properties
-g.add_edge(Edge("S", "DC1", num_of_trucks=3, truck_capacity=truck.capacity, road_multiplier=1, travel_time=1, resource_priority=1))
-g.add_edge(Edge("S", "DC2", num_of_trucks=2, truck_capacity=truck.capacity, road_multiplier=1, travel_time=2, resource_priority=1))
-g.add_edge(Edge("S", "DC3", num_of_trucks=4, truck_capacity=truck.capacity, road_multiplier=1, travel_time=1, resource_priority=1))
-g.add_edge(Edge("S", "DC4", num_of_trucks=3, truck_capacity=truck.capacity, road_multiplier=1, travel_time=3, resource_priority=1))
+g.add_edge(Edge("S", "DC1", num_of_trucks=3, truck_capacity=truck.capacity, road_multiplier=1, travel_time=1,
+                resource_priority=1))
+g.add_edge(Edge("S", "DC2", num_of_trucks=2, truck_capacity=truck.capacity, road_multiplier=1, travel_time=2,
+                resource_priority=1))
+g.add_edge(Edge("S", "DC3", num_of_trucks=4, truck_capacity=truck.capacity, road_multiplier=1, travel_time=1,
+                resource_priority=1))
+g.add_edge(Edge("S", "DC4", num_of_trucks=3, truck_capacity=truck.capacity, road_multiplier=1, travel_time=3,
+                resource_priority=1))
 
-g.add_edge(Edge("DC1", "S1", num_of_trucks=10, truck_capacity=truck.capacity, road_multiplier=1, travel_time=1, resource_priority=1))
-g.add_edge(Edge("DC1", "S2", num_of_trucks=2, truck_capacity=truck.capacity, road_multiplier=0.9, travel_time=2, resource_priority=1))
-g.add_edge(Edge("DC1", "S3", num_of_trucks=5, truck_capacity=truck.capacity, road_multiplier=1, travel_time=2, resource_priority=1))
-g.add_edge(Edge("DC2", "S2", num_of_trucks=5, truck_capacity=truck.capacity, road_multiplier=0.8, travel_time=1, resource_priority=1))
-g.add_edge(Edge("DC2", "S3", num_of_trucks=8, truck_capacity=truck.capacity, road_multiplier=1, travel_time=3, resource_priority=1))
-g.add_edge(Edge("DC2", "S4", num_of_trucks=5, truck_capacity=truck.capacity, road_multiplier=1, travel_time=1, resource_priority=1))
-g.add_edge(Edge("DC3", "S3", num_of_trucks=4, truck_capacity=truck.capacity, road_multiplier=0.9, travel_time=1, resource_priority=1))
-g.add_edge(Edge("DC3", "S4", num_of_trucks=6, truck_capacity=truck.capacity, road_multiplier=0.8, travel_time=2, resource_priority=1))
-g.add_edge(Edge("DC3", "S5", num_of_trucks=5, truck_capacity=truck.capacity, road_multiplier=1, travel_time=3, resource_priority=1))
-g.add_edge(Edge("DC4", "S4", num_of_trucks=2, truck_capacity=truck.capacity, road_multiplier=1, travel_time=1, resource_priority=1))
-g.add_edge(Edge("DC4", "S5", num_of_trucks=8, truck_capacity=truck.capacity, road_multiplier=0.7, travel_time=2, resource_priority=1))
+g.add_edge(Edge("DC1", "S1", num_of_trucks=10, truck_capacity=truck.capacity, road_multiplier=1, travel_time=1,
+                resource_priority=1))
+g.add_edge(Edge("DC1", "S2", num_of_trucks=2, truck_capacity=truck.capacity, road_multiplier=0.9, travel_time=2,
+                resource_priority=1))
+g.add_edge(Edge("DC1", "S3", num_of_trucks=5, truck_capacity=truck.capacity, road_multiplier=1, travel_time=2,
+                resource_priority=1))
+g.add_edge(Edge("DC2", "S2", num_of_trucks=5, truck_capacity=truck.capacity, road_multiplier=0.8, travel_time=1,
+                resource_priority=1))
+g.add_edge(Edge("DC2", "S3", num_of_trucks=8, truck_capacity=truck.capacity, road_multiplier=1, travel_time=3,
+                resource_priority=1))
+g.add_edge(Edge("DC2", "S4", num_of_trucks=5, truck_capacity=truck.capacity, road_multiplier=1, travel_time=1,
+                resource_priority=1))
+g.add_edge(Edge("DC3", "S3", num_of_trucks=4, truck_capacity=truck.capacity, road_multiplier=0.9, travel_time=1,
+                resource_priority=1))
+g.add_edge(Edge("DC3", "S4", num_of_trucks=6, truck_capacity=truck.capacity, road_multiplier=0.8, travel_time=2,
+                resource_priority=1))
+g.add_edge(Edge("DC3", "S5", num_of_trucks=5, truck_capacity=truck.capacity, road_multiplier=1, travel_time=3,
+                resource_priority=1))
+g.add_edge(Edge("DC4", "S4", num_of_trucks=2, truck_capacity=truck.capacity, road_multiplier=1, travel_time=1,
+                resource_priority=1))
+g.add_edge(Edge("DC4", "S5", num_of_trucks=8, truck_capacity=truck.capacity, road_multiplier=0.7, travel_time=2,
+                resource_priority=1))
 
-g.add_edge(Edge("S1", "T", num_of_trucks=float("inf"), truck_capacity=truck.capacity, road_multiplier=1, travel_time=1, resource_priority=1))
-g.add_edge(Edge("S2", "T", num_of_trucks=float("inf"), truck_capacity=truck.capacity, road_multiplier=1, travel_time=2, resource_priority=1))
-g.add_edge(Edge("S3", "T", num_of_trucks=float("inf"), truck_capacity=truck.capacity, road_multiplier=1, travel_time=1, resource_priority=1))
-g.add_edge(Edge("S4", "T", num_of_trucks=float("inf"), truck_capacity=truck.capacity, road_multiplier=1, travel_time=3, resource_priority=1))
-g.add_edge(Edge("S5", "T", num_of_trucks=float("inf"), truck_capacity=truck.capacity, road_multiplier=1, travel_time=2, resource_priority=1))
+g.add_edge(Edge("S1", "T", num_of_trucks=float("inf"), truck_capacity=truck.capacity, road_multiplier=1, travel_time=1,
+                resource_priority=1))
+g.add_edge(Edge("S2", "T", num_of_trucks=float("inf"), truck_capacity=truck.capacity, road_multiplier=1, travel_time=2,
+                resource_priority=1))
+g.add_edge(Edge("S3", "T", num_of_trucks=float("inf"), truck_capacity=truck.capacity, road_multiplier=1, travel_time=1,
+                resource_priority=1))
+g.add_edge(Edge("S4", "T", num_of_trucks=float("inf"), truck_capacity=truck.capacity, road_multiplier=1, travel_time=3,
+                resource_priority=1))
+g.add_edge(Edge("S5", "T", num_of_trucks=float("inf"), truck_capacity=truck.capacity, road_multiplier=1, travel_time=2,
+                resource_priority=1))
 
 max_flow_value = g.ford_fulkerson("S", "T")
 print("Maximum flow:", max_flow_value)
+
 
 # Visualize the graph
 def draw_graph(graph):
@@ -146,6 +183,7 @@ def draw_graph(graph):
 
     edge_labels = {(u, v): f"{d['capacity']}" for u, v, d in G.edges(data=True)}
 
+    # Drawing the graph
     plt.figure(figsize=(12, 8))
     nx.draw(G, pos, with_labels=True, node_size=2500, node_color="#1f78b4", font_size=12, font_weight="bold")
     nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_size=12, font_weight="bold")
